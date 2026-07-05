@@ -1,0 +1,22 @@
+.settings-panel{padding:1.5rem;max-width:600px;display:flex;flex-direction:column;gap:1.25rem}
+.settings-tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);overflow-x:auto}
+.settings-tab{padding:0.55rem 0.9rem;background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);font-size:0.82rem;font-weight:500;cursor:pointer;transition:var(--t);white-space:nowrap}
+.settings-tab:hover{color:var(--text)}.settings-tab.active{color:var(--primary-l);border-bottom-color:var(--primary-l)}
+.settings-section{display:flex;flex-direction:column;gap:1.1rem}
+.settings-section h3{font-size:1rem;font-weight:700;padding-bottom:0.75rem;border-bottom:1px solid var(--border)}
+.settings-desc{font-size:0.85rem;color:var(--text2)}
+.settings-row-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.radio-group{display:flex;gap:1.5rem}.radio-label{display:flex;align-items:center;gap:0.5rem;font-size:0.875rem;color:var(--text2);cursor:pointer}
+.radio-label input{accent-color:var(--primary)}
+.color-swatches{display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center}
+.color-swatch{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:var(--t)}
+.color-swatch:hover{transform:scale(1.15)}.color-swatch.active{border-color:#fff;box-shadow:0 0 0 2px var(--primary)}
+.color-picker-input{width:36px;height:36px;border-radius:50%;border:none;background:none;cursor:pointer;padding:0}
+.banner-preview{width:100%;max-height:180px;object-fit:cover;border-radius:var(--r);margin-top:0.65rem;border:1px solid var(--border);background:var(--bg3)}
+.share-link-row{display:flex;align-items:center;gap:0.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:0.55rem 0.75rem}
+.share-link-text{flex:1;font-size:0.8rem;color:var(--primary-l);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.share-tips{background:var(--surf2);border-radius:var(--r);padding:1rem 1.25rem;border:1px solid var(--border)}
+.share-tips h4{font-size:0.875rem;font-weight:600;margin-bottom:0.65rem}
+.share-tips ul{list-style:none;display:flex;flex-direction:column;gap:0.35rem}
+.share-tips li{font-size:0.82rem;color:var(--text2)}
+@media(max-width:480px){.settings-row-2{grid-template-columns:1fr}}

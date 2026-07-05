@@ -1,0 +1,26 @@
+.resp-panel{padding:1.5rem;display:flex;flex-direction:column;gap:1rem;height:100%}
+.resp-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:var(--surf);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;box-shadow:var(--shadow)}
+.resp-hero h2{font-size:1.15rem;font-weight:750;margin-bottom:.2rem}
+.resp-hero p{font-size:.84rem;color:var(--text2)}
+.resp-actions{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.resp-filter{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.resp-filter span{font-size:.8rem;color:var(--text3)}
+.search-inp{max-width:320px}
+.resp-loading{display:flex;justify-content:center;padding:4rem}
+.resp-empty{background:var(--surf);border:1px dashed var(--border-h);border-radius:var(--r-lg);text-align:center;padding:4rem 1rem;color:var(--text2)}
+.resp-empty h3{font-size:1rem;color:var(--text);margin-bottom:.35rem}.resp-empty p{font-size:.84rem;color:var(--text3)}
+.resp-table-wrap{overflow:auto;border-radius:var(--r-lg);border:1px solid var(--border);background:var(--surf);box-shadow:var(--shadow)}
+.resp-table{width:100%;border-collapse:separate;border-spacing:0;font-size:.84rem;min-width:760px}
+.resp-table th{background:var(--surf2);padding:.85rem 1rem;text-align:left;font-weight:700;color:var(--text2);font-size:.75rem;border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:1;text-transform:uppercase;letter-spacing:.04em}
+.resp-table td{padding:.85rem 1rem;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.resp-table tr:last-child td{border-bottom:none}
+.resp-table tbody tr:hover td{background:rgba(124,58,237,.06)}
+.index-cell{width:52px;color:var(--text2);font-weight:700}
+.ts-cell{color:var(--text2);white-space:nowrap;font-size:.8rem}
+.data-cell{max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:550}
+.actions-col{width:170px}
+.row-actions{display:flex;gap:.45rem;align-items:center}
+.muted{color:var(--text3);font-size:.8rem}
+.danger-btn{color:#fca5a5!important}
+.danger-btn:hover{color:#fff!important;background:rgba(239,68,68,.18)!important;border-color:rgba(239,68,68,.45)!important}
+@media(max-width:720px){.resp-panel{padding:1rem}.resp-actions{width:100%}.resp-actions .btn{flex:1}.search-inp{max-width:none}}
