@@ -41,88 +41,103 @@ def upload_file(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def submit_response(request):
-    slug             = request.data.get('form_slug', '')
-    data             = request.data.get('data', {})
-    fingerprint      = request.data.get('fingerprint', '')
-    time_to_complete = request.data.get('time_to_complete', 0)
-    file_ids         = request.data.get('file_ids', {})   # {field_id: uploaded_file_id}
-
-    if not slug:
-        return DRFResponse({'error': 'form_slug is required.'}, status=400)
-
     try:
-        form = Form.objects.select_related('settings').get(slug=slug)
-    except Form.DoesNotExist:
-        return DRFResponse({'error': 'Form not found.'}, status=404)
+        
+        slug             = request.data.get('form_slug', '')
+        data             = request.data.get('data', {})
+        fingerprint      = request.data.get('fingerprint', '')
+        time_to_complete = request.data.get('time_to_complete', 0)
+        file_ids         = request.data.get('file_ids', {})   # {field_id: uploaded_file_id}
 
-    ok, reason = form.is_accepting()
-    if not ok:
-        return DRFResponse({'error': reason}, status=403)
+        if not slug:
+            return DRFResponse({'error': 'form_slug is required.'}, status=400)
 
-    # s = form.settings
-    from forms.models import FormSettings
-    s, _ = FormSettings.objects.get_or_create(form=form)
+        try:
+            form = Form.objects.select_related('settings').get(slug=slug)
+        except Form.DoesNotExist:
+            return DRFResponse({'error': 'Form not found.'}, status=404)
 
-    # Duplicate checks
-    if s.submission_limit_mode == 'browser' and not fingerprint:
-        return DRFResponse({'error': 'This form allows one response per browser. Please enable browser storage and try again.'}, status=400)
+        ok, reason = form.is_accepting()
+        if not ok:
+            return DRFResponse({'error': reason}, status=403)
 
-    if s.submission_limit_mode == 'browser' and fingerprint:
-        if Response.objects.filter(form=form, fingerprint=fingerprint).exists():
-            return DRFResponse({'error': 'You have already submitted this form.'}, status=409)
+        # s = form.settings
+        from forms.models import FormSettings
+        s, _ = FormSettings.objects.get_or_create(form=form)
 
-    # Robustly detect an email value in the submitted data. Support keys like
-    # 'email', 'Email Address', 'Email', etc., and also accept values that
-    # look like an email address even if the key is custom.
-    email = ''
-    if isinstance(data, dict):
-        for k, v in data.items():
-            if not v:
-                continue
-            if isinstance(v, (list, dict)):
-                # skip complex types
-                continue
-            ks = str(k).lower()
-            vs = str(v).strip()
-            # key contains 'email' is highest priority
-            if 'email' in ks:
-                email = vs
-                break
-            # fallback: value looks like an email address
-            if '@' in vs and '.' in vs.split('@')[-1]:
-                email = vs
-                # don't break yet; prefer a key that contains 'email' if present later
-    email = (email or '').strip()
-    # normalize
-    if email:
-        email = email.lower()
+        # Duplicate checks
+        if s.submission_limit_mode == 'browser' and not fingerprint:
+            return DRFResponse({'error': 'This form allows one response per browser. Please enable browser storage and try again.'}, status=400)
 
-    if s.submission_limit_mode == 'email' and not email:
-        return DRFResponse({'error': 'This form allows one response per email. Please include an email address.'}, status=400)
+        if s.submission_limit_mode == 'browser' and fingerprint:
+            if Response.objects.filter(form=form, fingerprint=fingerprint).exists():
+                return DRFResponse({'error': 'You have already submitted this form.'}, status=409)
 
-    if s.submission_limit_mode == 'email' and email:
-        if Response.objects.filter(form=form, email__iexact=email).exists():
-            return DRFResponse({'error': 'A response from this email already exists.'}, status=409)
+        # Robustly detect an email value in the submitted data. Support keys like
+        # 'email', 'Email Address', 'Email', etc., and also accept values that
+        # look like an email address even if the key is custom.
+        email = ''
+        if isinstance(data, dict):
+            for k, v in data.items():
+                if not v:
+                    continue
+                if isinstance(v, (list, dict)):
+                    # skip complex types
+                    continue
+                ks = str(k).lower()
+                vs = str(v).strip()
+                # key contains 'email' is highest priority
+                if 'email' in ks:
+                    email = vs
+                    break
+                # fallback: value looks like an email address
+                if '@' in vs and '.' in vs.split('@')[-1]:
+                    email = vs
+                    # don't break yet; prefer a key that contains 'email' if present later
+        email = (email or '').strip()
+        # normalize
+        if email:
+            email = email.lower()
 
-    response_obj = Response.objects.create(
-        form=form, data_json=data, fingerprint=fingerprint,
-        email=email, time_to_complete=time_to_complete,
-        ip_address=request.META.get('REMOTE_ADDR'),
-    )
+        if s.submission_limit_mode == 'email' and not email:
+            return DRFResponse({'error': 'This form allows one response per email. Please include an email address.'}, status=400)
 
-    # Link any uploaded files
-    if file_ids:
-        for field_id, file_id in file_ids.items():
-            UploadedFile.objects.filter(id=file_id, form=form).update(response=response_obj)
+        if s.submission_limit_mode == 'email' and email:
+            if Response.objects.filter(form=form, email__iexact=email).exists():
+                return DRFResponse({'error': 'A response from this email already exists.'}, status=409)
 
-    # Send email notification (non-blocking)
-    # send_response_notification(form, response_obj)
+        response_obj = Response.objects.create(
+            form=form, data_json=data, fingerprint=fingerprint,
+            email=email, time_to_complete=time_to_complete,
+            ip_address=request.META.get('REMOTE_ADDR'),
+        )
 
-    return DRFResponse({
-        'message': s.confirmation_message,
-        'id': response_obj.id,
-        'redirect_url': s.redirect_url or '',
-    }, status=201)
+        # Link any uploaded files
+        if file_ids:
+            for field_id, file_id in file_ids.items():
+                UploadedFile.objects.filter(id=file_id, form=form).update(response=response_obj)
+
+        # Send email notification (non-blocking)
+        # send_response_notification(form, response_obj)
+
+        return DRFResponse({
+            'message': s.confirmation_message,
+            'id': response_obj.id,
+            'redirect_url': s.redirect_url or '',
+        }, status=201)
+        
+    except Exception as e:
+        import traceback
+        print("SUBMIT ERROR:", e)
+        print(traceback.format_exc())
+
+        return DRFResponse(
+            {
+                "error": str(e),
+                "trace": traceback.format_exc()
+            },
+            status=500
+        )
 
 
 # ── Public: Session tracking ──────────────────────────────────────────────────
