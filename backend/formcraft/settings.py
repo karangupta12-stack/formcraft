@@ -34,7 +34,7 @@ def _normalize_host(host):
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-formcraft-dev-key-change-in-prod')
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'False'
 raw_allowed_hosts = _split_env_list(os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1'))
 ALLOWED_HOSTS = ['*'] if '*' in raw_allowed_hosts else [_normalize_host(host) for host in raw_allowed_hosts]
 
