@@ -18,3 +18,5 @@
 .ap-questions h3{font-size:0.875rem;font-weight:600;color:var(--text2)}
 .ap-q-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
 .ap-q-card{padding:1.1rem}.ap-q-card h4{font-size:0.82rem;font-weight:600;color:var(--text2)}
+@media(max-width:720px){.ap-wrap{padding:1rem}.ap-toolbar{align-items:flex-start;flex-direction:column;gap:.75rem}.ap-toolbar>div{width:100%;overflow-x:auto}.ap-metrics{grid-template-columns:1fr 1fr}.ap-bar-row{align-items:flex-start;flex-direction:column;gap:.45rem}.ap-bar-row>span,.ap-bar-row>strong{width:auto;text-align:left}.ap-bar-bg{width:100%}}
+@media(max-width:480px){.ap-metrics{grid-template-columns:1fr}.ap-q-grid{grid-template-columns:1fr}}

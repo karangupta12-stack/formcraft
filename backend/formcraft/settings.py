@@ -34,7 +34,7 @@ def _normalize_host(host):
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-formcraft-dev-key-change-in-prod')
-DEBUG = os.getenv('DEBUG', 'False') == 'False'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 raw_allowed_hosts = _split_env_list(os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1'))
 ALLOWED_HOSTS = ['*'] if '*' in raw_allowed_hosts else [_normalize_host(host) for host in raw_allowed_hosts]
 
@@ -134,6 +134,7 @@ CORS_ALLOWED_ORIGINS = os.getenv(
 )
 CORS_ALLOWED_ORIGINS = _split_env_list(CORS_ALLOWED_ORIGINS)
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 # ── Email (Gmail SMTP) ────────────────────────────────────────────────────────
 # Set EMAIL_HOST_USER and EMAIL_HOST_PASSWORD in .env to enable

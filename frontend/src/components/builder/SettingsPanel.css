@@ -1,8 +1,8 @@
-.settings-panel{padding:1.5rem;max-width:600px;display:flex;flex-direction:column;gap:1.25rem}
-.settings-tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);overflow-x:auto}
+.settings-panel{padding:1.5rem;width:100%;max-width:760px;display:flex;flex-direction:column;gap:1.25rem;min-height:0}
+.settings-tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);overflow-x:auto;position:sticky;top:106px;background:var(--bg2);z-index:20}
 .settings-tab{padding:0.55rem 0.9rem;background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);font-size:0.82rem;font-weight:500;cursor:pointer;transition:var(--t);white-space:nowrap}
 .settings-tab:hover{color:var(--text)}.settings-tab.active{color:var(--primary-l);border-bottom-color:var(--primary-l)}
-.settings-section{display:flex;flex-direction:column;gap:1.1rem}
+.settings-section{display:flex;flex-direction:column;gap:1.1rem;overflow:visible}
 .settings-section h3{font-size:1rem;font-weight:700;padding-bottom:0.75rem;border-bottom:1px solid var(--border)}
 .settings-desc{font-size:0.85rem;color:var(--text2)}
 .settings-row-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
@@ -19,4 +19,5 @@
 .share-tips h4{font-size:0.875rem;font-weight:600;margin-bottom:0.65rem}
 .share-tips ul{list-style:none;display:flex;flex-direction:column;gap:0.35rem}
 .share-tips li{font-size:0.82rem;color:var(--text2)}
+@media(max-width:720px){.settings-panel{padding:1rem;max-width:none}.settings-tabs{top:132px}.share-link-row{align-items:stretch;flex-direction:column}.share-link-text{white-space:normal;word-break:break-all}.settings-section.card{padding:1rem}}
 @media(max-width:480px){.settings-row-2{grid-template-columns:1fr}}

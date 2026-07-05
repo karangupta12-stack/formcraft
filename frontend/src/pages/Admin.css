@@ -34,7 +34,7 @@
 .header-title h1 { font-size:1rem; font-weight:700; }
 .header-form-name { font-size:0.875rem; color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .hamburger { display:none; flex-shrink:0; }
-.admin-content { flex:1; overflow-y:auto; }
+.admin-content { flex:1; min-height:0; overflow:visible; }
 
 /* Mobile sidebar */
 .sidebar-overlay { display:none; }

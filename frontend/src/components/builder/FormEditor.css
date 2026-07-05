@@ -1,5 +1,5 @@
 .fe-loading { display:flex; justify-content:center; padding:5rem; }
-.form-editor { display:flex; flex-direction:column; height:100%; }
+.form-editor { display:flex; flex-direction:column; min-height:100%; }
 
 .fe-topbar { display:flex; align-items:center; justify-content:space-between; padding:0 1rem; border-bottom:1px solid rgba(0,0,0,0); background:var(--surf); min-height:50px; gap:0.5rem; flex-wrap:wrap; position:sticky; top:56px; z-index:60; box-shadow: 0 4px 12px rgba(0,0,0,0.35); }
 .fe-tabs { display:flex; gap:2px; overflow-x:auto; flex-shrink:0; }
@@ -11,12 +11,16 @@
 .fe-actions { display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap; }
 .fe-actions .btn { vertical-align:middle }
 .fe-tab:focus { outline:none; box-shadow:none; }
-.saving-txt { font-size:0.75rem; color:var(--text3); }
-.fe-content { flex:1; overflow-y:auto; }
+.saving-txt { font-size:0.75rem; color:var(--text3); min-width:88px; text-align:right; }
+.saving-txt.saving{color:var(--primary-l)}
+.saving-txt.unsaved{color:var(--warning)}
+.saving-txt.saved{color:var(--success)}
+.fe-content { flex:1; min-height:0; overflow:visible; }
 
 @media (max-width:640px) {
-  .fe-topbar { padding:0 0.5rem; }
-  .fe-tab { padding:0.55rem 0.6rem; }
-  .fe-tab-label { display:none; }
-  .fe-tab-icon { font-size:1.1rem; }
+  .fe-topbar { padding:0.45rem 0.5rem; top:56px; align-items:flex-start; }
+  .fe-tabs { width:100%; }
+  .fe-tab { padding:0.55rem 0.6rem; flex:1; justify-content:center; }
+  .fe-actions { width:100%; overflow-x:auto; flex-wrap:nowrap; padding-bottom:.25rem; }
+  .saving-txt { text-align:left; min-width:auto; padding:.25rem .35rem; }
 }

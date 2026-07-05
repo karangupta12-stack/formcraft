@@ -64,6 +64,7 @@ export const responsesAPI = {
   deleteOne:    (slug, pk)   => api.delete(`/responses/${slug}/${pk}/delete/`),
   clearAll:     slug         => api.delete(`/responses/${slug}/clear/`),
   exportExcel:  slug         => api.get(`/responses/${slug}/export/`, { responseType: 'blob' }),
+  exportCSV:    slug         => api.get(`/responses/${slug}/export/csv/`, { responseType: 'blob' }),
 }
 
 // ── Analytics ─────────────────────────────────────────────────────────────────

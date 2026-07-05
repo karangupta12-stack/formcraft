@@ -10,4 +10,5 @@ urlpatterns = [
     path('<uuid:slug>/<int:pk>/delete/',         views.delete_response,name='delete_response'),
     path('<uuid:slug>/clear/',                   views.clear_responses,name='clear_responses'),
     path('<uuid:slug>/export/',                  views.export_excel,   name='export_excel'),
+    path('<uuid:slug>/export/csv/',              views.export_csv,     name='export_csv'),
 ]

@@ -26,26 +26,56 @@ export default function FormEditor({ formSlug, onDelete, onDuplicate, onUpdate }
   const [respCount, setRespCount] = useState(0)
   const [builderDraft, setBuilderDraft] = useState(null)
   const [builderDirty, setBuilderDirty] = useState(false)
+  const [saveStatus, setSaveStatus] = useState('saved')
+  const [restoredDraft, setRestoredDraft] = useState(false)
   const autosaveTimer = useRef(null)
+  const draftKey = `fc_builder_draft_${formSlug}`
 
   useEffect(() => {
     setLoading(true)
+    setRestoredDraft(false)
+    setBuilderDraft(null)
+    setBuilderDirty(false)
+    setSaveStatus('saved')
     formsAPI.get(formSlug)
-      .then(r => { setForm(r.data); onUpdate?.(r.data) })
+      .then(r => {
+        let nextForm = r.data
+        try {
+          const stored = JSON.parse(localStorage.getItem(draftKey) || 'null')
+          if (stored?.draft) {
+            nextForm = { ...nextForm, ...stored.draft }
+            setBuilderDraft(stored.draft)
+            setBuilderDirty(true)
+            setSaveStatus('unsaved')
+            setRestoredDraft(true)
+            toast('Restored unsaved draft')
+          }
+        } catch {
+          localStorage.removeItem(draftKey)
+        }
+        setForm(nextForm)
+        setRespCount(r.data.response_count || 0)
+        onUpdate?.(r.data)
+      })
       .catch(() => toast.error('Failed to load form'))
       .finally(() => setLoading(false))
   }, [formSlug])
 
-  const saveForm = async updates => {
+  const saveForm = async (updates, options = {}) => {
     setSaving(true)
+    setSaveStatus('saving')
     try {
       const r = await formsAPI.update(formSlug, updates)
       setForm(r.data)
       onUpdate?.(r.data)
       setBuilderDirty(false)
-      toast.success('Form saved')
+      setSaveStatus('saved')
+      setRestoredDraft(false)
+      localStorage.removeItem(draftKey)
+      if (!options.silent) toast.success('Form saved successfully')
       return r.data
     } catch (err) {
+      setSaveStatus('unsaved')
       toast.error(err.response?.data?.error || 'Failed to save form')
       throw err
     } finally {
@@ -59,10 +89,12 @@ export default function FormEditor({ formSlug, onDelete, onDuplicate, onUpdate }
       autosaveTimer.current = null
     }
     if (builderDirty && builderDraft) {
+      setSaveStatus('unsaved')
+      localStorage.setItem(draftKey, JSON.stringify({ draft: builderDraft, saved_at: Date.now() }))
       autosaveTimer.current = setTimeout(() => {
-        saveForm(builderDraft).catch(() => {})
+        saveForm(builderDraft, { silent: true }).catch(() => {})
         autosaveTimer.current = null
-      }, 1200)
+      }, 2500)
     }
     return () => {
       if (autosaveTimer.current) {
@@ -72,6 +104,16 @@ export default function FormEditor({ formSlug, onDelete, onDuplicate, onUpdate }
     }
   }, [builderDraft, builderDirty])
 
+  useEffect(() => {
+    const warn = event => {
+      if (!builderDirty) return
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [builderDirty])
+
   const formLink = `${window.location.origin}/f/${formSlug}`
 
   const copyLink = async () => {
@@ -80,7 +122,7 @@ export default function FormEditor({ formSlug, onDelete, onDuplicate, onUpdate }
   }
 
   const ensureSaved = async () => {
-    if (builderDirty && builderDraft) return saveForm(builderDraft)
+    if (builderDirty && builderDraft) return saveForm(builderDraft, { silent: true })
     return form
   }
 
@@ -116,7 +158,12 @@ export default function FormEditor({ formSlug, onDelete, onDuplicate, onUpdate }
           ))}
         </div>
         <div className="fe-actions">
-          {saving && <span className="saving-txt">Saving...</span>}
+          <span className={`saving-txt ${saveStatus}`}>{saveStatus === 'saving' ? 'Saving...' : saveStatus === 'unsaved' ? 'Unsaved changes' : 'Saved'}</span>
+          {tab === 'builder' && (
+            <button className="btn btn-primary btn-sm" onClick={() => builderDraft && saveForm(builderDraft)} disabled={saving || !builderDirty}>
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+          )}
           <button className="btn btn-ghost btn-sm" onClick={copyLink} title="Copy public link">Copy link</button>
           <button className="btn btn-ghost btn-sm" onClick={() => setShowQR(true)} title="QR code">QR</button>
           <button className="btn btn-ghost btn-sm" onClick={() => setShowEmbed(true)} title="Embed code">Embed</button>
@@ -127,10 +174,19 @@ export default function FormEditor({ formSlug, onDelete, onDuplicate, onUpdate }
       </div>
 
       <div className="fe-content">
-        {tab === 'builder' && <FormBuilder form={form} onSave={saveForm} saving={saving} onDraftChange={setBuilderDraft} onDirtyChange={setBuilderDirty} />}
-        {tab === 'responses' && <ResponsesPanel form={form} onCountChange={setRespCount} />}
+        {tab === 'builder' && <FormBuilder form={form} onSave={saveForm} saving={saving} onDraftChange={setBuilderDraft} onDirtyChange={setBuilderDirty} initialDirty={restoredDraft} />}
+        {tab === 'responses' && <ResponsesPanel form={form} onCountChange={count => {
+          setRespCount(count)
+          onUpdate?.({ ...form, response_count: count })
+        }} />}
         {tab === 'analytics' && <AnalyticsPanel formSlug={formSlug} />}
-        {tab === 'settings' && <SettingsPanel form={form} onSave={setForm} />}
+        {tab === 'settings' && <SettingsPanel form={form} onSave={updater => {
+          setForm(prev => {
+            const next = typeof updater === 'function' ? updater(prev) : updater
+            onUpdate?.(next)
+            return next
+          })
+        }} />}
       </div>
 
       {showQR && <QRModal formSlug={formSlug} onClose={() => setShowQR(false)} />}

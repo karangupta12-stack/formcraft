@@ -22,7 +22,7 @@ const TYPE_LABEL = {
   calculated: 'Calculated',
 }
 
-export default function FormBuilder({ form, onSave, saving, onDraftChange, onDirtyChange }) {
+export default function FormBuilder({ form, onSave, saving, onDraftChange, onDirtyChange, initialDirty = false }) {
   const [title, setTitle] = useState(form.title)
   const [desc, setDesc] = useState(form.description)
   const [fields, setFields] = useState(form.fields_json || [])
@@ -37,7 +37,7 @@ export default function FormBuilder({ form, onSave, saving, onDraftChange, onDir
     setTitle(form.title)
     setDesc(form.description)
     setFields(form.fields_json || [])
-    setDirty(false)
+    setDirty(initialDirty)
   }, [form.slug])
 
   useEffect(() => {
@@ -104,9 +104,9 @@ export default function FormBuilder({ form, onSave, saving, onDraftChange, onDir
       <div className="builder-toolbar">
         <button className="btn btn-ghost btn-sm" onClick={() => setShowTpl(true)}>Templates</button>
         <div className="tb-right">
-          {dirty && <span className="unsaved-dot" title="Unsaved changes" />}
+          {dirty && <span className="unsaved-state"><span className="unsaved-dot" /> Unsaved changes</span>}
           <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving || !dirty}>
-            {saving ? 'Saving...' : 'Save form'}
+            {saving ? 'Saving...' : 'Save'}
           </button>
         </div>
       </div>
