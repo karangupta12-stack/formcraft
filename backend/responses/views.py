@@ -6,7 +6,7 @@ from django.http import HttpResponse
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 
-from forms.models import Form
+from forms.models import Form, FormSettings
 from .models import Response as Response, UploadedFile, Session
 from .email_utils import send_response_notification
 
@@ -59,7 +59,9 @@ def submit_response(request):
     if not ok:
         return DRFResponse({'error': reason}, status=403)
 
-    s = form.settings
+    # s = form.settings
+    from forms.models import FormSettings
+    s, _ = FormSettings.objects.get_or_create(form=form)
 
     # Duplicate checks
     if s.submission_limit_mode == 'browser' and not fingerprint:
