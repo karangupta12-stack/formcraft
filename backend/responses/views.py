@@ -114,7 +114,7 @@ def submit_response(request):
             UploadedFile.objects.filter(id=file_id, form=form).update(response=response_obj)
 
     # Send email notification (non-blocking)
-    send_response_notification(form, response_obj)
+    # send_response_notification(form, response_obj)
 
     return DRFResponse({
         'message': s.confirmation_message,
