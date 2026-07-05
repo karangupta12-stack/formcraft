@@ -6,7 +6,7 @@ class Response(models.Model):
     form             = models.ForeignKey(Form, on_delete=models.CASCADE, related_name='responses')
     data_json        = models.JSONField(default=dict)
     submitted_at     = models.DateTimeField(auto_now_add=True)
-    fingerprint      = models.CharField(max_length=64, blank=True, default='')
+    fingerprint      = models.CharField(blank=True, default='')
     email            = models.EmailField(blank=True, default='')
     time_to_complete = models.PositiveIntegerField(default=0)
     ip_address       = models.GenericIPAddressField(null=True, blank=True)
